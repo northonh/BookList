@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Book> bookList;
 
     // Adapter do ListView
-    private ArrayAdapter<String> bookListAdapter;
+    private BookListAdapter bookListAdapter;
 
     // View Binding
     private ActivityMainBinding activityMainBinding;
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         initializeBookList();
 
         // Instanciar bookListAdapter
-        bookListAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, bookList);
+        bookListAdapter = new BookListAdapter(this, R.layout.book_layout, bookList);
 
         // Setando bookListAdapter como Adapter do bookListLv
         activityMainBinding.bookListLv.setAdapter(bookListAdapter);
