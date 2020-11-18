@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">BookList</string>
+    <string name="title">Title</string>
+    <string name="isbn">ISBN</string>
+    <string name="save">Save</string>
+    <string name="pages">Pages</string>
+    <string name="edition">Edition</string>
+    <string name="publishing_company">Publishing company</string>
+    <string name="first_author">First author</string>
+    <string name="new_book">New book</string>
 </resources>

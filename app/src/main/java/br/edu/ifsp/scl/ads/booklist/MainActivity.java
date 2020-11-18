@@ -1,8 +1,13 @@
 package br.edu.ifsp.scl.ads.booklist;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
@@ -19,6 +24,12 @@ public class MainActivity extends AppCompatActivity {
 
     // View Binding
     private ActivityMainBinding activityMainBinding;
+
+    // Constante para extra de Book
+    public static final String EXTRA_BOOK = "EXTRA_BOOK";
+
+    // Constante de request code para NewBookActivity
+    private final int NEW_BOOK_REQUEST_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,4 +65,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.newBookMi) {
+            Intent newBookIntent = new Intent(this, NewBookActivity.class);
+            startActivityForResult(newBookIntent, NEW_BOOK_REQUEST_CODE);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == NEW_BOOK_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            Book newBook = data.getParcelableExtra(MainActivity.EXTRA_BOOK);
+            bookList.add(newBook);
+            bookListAdapter.notifyDataSetChanged();
+        }
+    }
 }
