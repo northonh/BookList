@@ -15,6 +15,41 @@ class NewBookActivity : AppCompatActivity() {
         // Inflar leiaute com view binding
         activityNewBookBinding = ActivityNewBookBinding.inflate(layoutInflater)
         setContentView(activityNewBookBinding.root)
+
+        val book = intent.getParcelableExtra<Book>(MainActivity.EXTRA_BOOK)
+        if (book != null) {
+            // Edição ou Visualização
+            with (activityNewBookBinding) {
+                titleEt.setText(book.title)
+                isbnEt.setText(book.isbn)
+                firstAuthorEt.setText(book.firstAuthor)
+                publishingCompanyEt.setText(book.publishingCompany)
+                editionEt.setText(book.edition.toString())
+                pagesEt.setText(book.pages.toString())
+            }
+
+            val action = intent.action
+            if (action != null && action == MainActivity.ACTION_VIEW_BOOK) {
+                // Visualização
+                supportActionBar?.subtitle = "Book details"
+                with (activityNewBookBinding) {
+                    titleEt.isEnabled = false
+                    isbnEt.isEnabled = false
+                    firstAuthorEt.isEnabled = false
+                    publishingCompanyEt.isEnabled = false
+                    editionEt.isEnabled = false
+                    pagesEt.isEnabled = false
+                    saveBt.visibility = View.GONE
+                }
+            }
+            else {
+                // Edição
+                supportActionBar?.subtitle = "Edit book"
+            }
+        }
+        else{
+            supportActionBar?.subtitle = "New book"
+        }
     }
 
     fun onClick(view: View) {

@@ -6,9 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Constante de request code para NewBookActivity
     private final int NEW_BOOK_REQUEST_CODE = 0;
+    private final int EDIT_BOOK_REQUEST_CODE = 1;
+
+    // Posição do Book editado
+    private int editedBookPosition;
+
+    // Action para visualização do Book
+    public static final String ACTION_VIEW_BOOK = "ACTION_VIEW_BOOK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +58,21 @@ public class MainActivity extends AppCompatActivity {
 
         // Setando bookListAdapter como Adapter do bookListLv
         activityMainBinding.bookListLv.setAdapter(bookListAdapter);
+
+        // Registrar bookListLv com o menu de contexto
+        registerForContextMenu(activityMainBinding.bookListLv);
+
+        activityMainBinding.bookListLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Book book = bookList.get(position);
+
+                Intent viewBookIntent = new Intent(MainActivity.this, NewBookActivity.class);
+                viewBookIntent.putExtra(EXTRA_BOOK, book);
+                viewBookIntent.setAction(ACTION_VIEW_BOOK);
+                startActivity(viewBookIntent);
+            }
+        });
     }
 
     // Método que popula o bookList para teste
@@ -82,6 +108,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu_main, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Book book = bookList.get(info.position);
+        switch (item.getItemId()) {
+            case R.id.editBookMi:
+                Intent editBookIntent = new Intent(this, NewBookActivity.class);
+                editBookIntent.putExtra(EXTRA_BOOK, book);
+                editedBookPosition = info.position;
+                startActivityForResult(editBookIntent, EDIT_BOOK_REQUEST_CODE);
+                return true;
+            case R.id.deleteBookMi:
+                bookListAdapter.remove(book);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -89,6 +140,14 @@ public class MainActivity extends AppCompatActivity {
             Book newBook = data.getParcelableExtra(MainActivity.EXTRA_BOOK);
             bookList.add(newBook);
             bookListAdapter.notifyDataSetChanged();
+        }
+        else {
+            if (requestCode == EDIT_BOOK_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+                Book editedBook = data.getParcelableExtra(MainActivity.EXTRA_BOOK);
+                bookListAdapter.remove(bookList.get(editedBookPosition));
+                bookList.add(editedBookPosition, editedBook);
+                bookListAdapter.notifyDataSetChanged();
+            }
         }
     }
 }

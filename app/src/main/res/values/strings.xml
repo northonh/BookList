@@ -8,4 +8,6 @@
     <string name="publishing_company">Publishing company</string>
     <string name="first_author">First author</string>
     <string name="new_book">New book</string>
+    <string name="edit_book">Edit book</string>
+    <string name="delete_book">Delete book</string>
 </resources>
